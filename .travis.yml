@@ -1,5 +1,4 @@
 ---
-
 os: linux
 dist: xenial
 
@@ -8,7 +7,9 @@ services:
 language: python
 python:
   - '3.7'
-
+arch:
+    - amd64
+    - arm64
 cache: pip
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
@@ -30,6 +31,14 @@ jobs:
   include:
     - stage: "deploy arm"
       arch: arm64
+      install: skip
+      script: bash deploy.sh
+      env:
+        # workaround arm64: https://travis-ci.community/t/error-occurs-when-deploy-to-github-release-you-dont-have-write-permissions-for-the-var-lib-gems-2-5-0-directory/5840
+        - PATH=~/.ruby/bin:$PATH
+        - GEM_HOME=~/.ruby
+    - stage: "deploy arm"
+      arch: amd64
       install: skip
       script: bash deploy.sh
       env:
